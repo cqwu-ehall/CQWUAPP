@@ -3,9 +3,11 @@
 # 重庆文理学院消费码APP
 ## 桌面小部件
 ![](preview/view.jpg)
-
+##主界面
 ![](preview/main.jpg)
 
-![](preview/pay)
+## 充值界面
+![](preview/pay.jpg)
 
+## 登录界面
 ![](preview/login.jpg)
