@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="300dp"
+    android:background="@color/white">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:text="本登录用于登录重庆文理学院网上办事大厅，用于接管后续使用的服务，点击登录即同意软件使用您的信息,如不同意请禁止使用.\n
+软件使用您的用户信息的功能如下：\n
+1、用于登录网上办事大厅，为你提供本软件的大部分功能。\n
+2、作为用户唯一判断标识,以便于为您持续提供服务。\n
+3、本软件属于非盈利开源软件。\n"
+        android:textColor="#666" />
+
+
+</LinearLayout>

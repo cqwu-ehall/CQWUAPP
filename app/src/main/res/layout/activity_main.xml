@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+            android:orientation="vertical">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="211dp"
+                        android:background="#03A9F4"
+                        android:minHeight="300dp"
+                        android:orientation="vertical">
+
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center|left"
+                            android:layout_marginTop="30dp"
+                            android:orientation="vertical"
+                            android:paddingLeft="20dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingBottom="10dp"
+                                android:text="文理校园"
+                                android:textColor="@color/white"
+                                android:textSize="30sp"
+
+                                />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="30dp"
+                                android:text="软件介绍:\n本软件开源,不会收集任何用户隐私"
+                                android:textColor="#eee"
+                                android:textSize="15sp"
+                                />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <TableLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp">
+
+                        <TableRow
+                            android:layout_marginBottom="10dp"
+                            android:gravity="center">
+
+                            <LinearLayout
+                                android:layout_width="80dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="top|center"
+                                android:layout_marginLeft="5dp"
+
+                                android:orientation="vertical">
+
+                                <ImageButton
+                                    android:id="@+id/tool_recharge"
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"
+                                    android:layout_gravity="center"
+                                    android:background="@drawable/ic_open_in_browser_black_48dp"
+                                    android:clickable="true"
+                                    android:foreground="?android:selectableItemBackground"/>
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="20dp"
+                                    android:gravity="center"
+                                    android:text="余额充值" />
+
+
+                            </LinearLayout>
+
+                            <LinearLayout
+
+                                android:layout_width="80dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="top|center"
+                                android:layout_marginLeft="5dp"
+                                android:orientation="vertical">
+
+                                <ImageButton
+                                    android:id="@+id/tool_login"
+                                    android:layout_width="60dp"
+                                    android:layout_height="61dp"
+                                    android:layout_gravity="center"
+                                    android:background="@drawable/ic_face_black_48dp"
+                                    android:clickable="true"
+                                    android:foreground="?android:selectableItemBackground" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="20dp"
+                                    android:gravity="center"
+                                    android:text="登录" />
+
+
+                            </LinearLayout>
+
+
+
+                        </TableRow>
+                    </TableLayout>
+
+
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/juanzhu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:clickable="true"
+                        android:foreground="?android:selectableItemBackground"
+                        app:cardBackgroundColor="#fff"
+                        app:cardCornerRadius="10dp"
+                        app:cardMaxElevation="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="86dp"
+                                android:background="@color/card_image_color"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:text="捐助"
+                                    android:textColor="#333"
+                                    android:textSize="20sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="10dp"
+                                android:paddingTop="10dp"
+                                android:paddingBottom="5dp"
+                                android:text="如果本应用您觉得还挺好用的，那何不支持一波，捐助一定金额即可开启永久使用本软件的权限.捐助自由!"
+                                android:textColor="#333"
+                                android:textSize="10dp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="10dp"
+                                android:paddingTop="5dp"
+                                android:paddingRight="20dp"
+                                android:paddingBottom="10dp"
+                                android:text=""
+                                android:textColor="#666"
+                                android:textSize="9sp" />
+                        </LinearLayout>
+                    </android.support.v7.widget.CardView>
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/refresh"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:clickable="true"
+                        android:foreground="?android:selectableItemBackground"
+                        app:cardBackgroundColor="#fff"
+                        app:cardCornerRadius="10dp"
+                        app:cardMaxElevation="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="86dp"
+                                android:background="@color/card_image_color"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:text="刷新小部件"
+                                    android:textColor="#333"
+                                    android:textSize="20sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="10dp"
+                                android:paddingTop="5dp"
+                                android:paddingRight="20dp"
+                                android:paddingBottom="10dp"
+                                android:text="如果遇到桌面小部件点击无效请点击此这里进行刷新即可修复"
+                                android:textColor="#666"
+                                android:textSize="9sp" />
+                        </LinearLayout>
+                    </android.support.v7.widget.CardView>
+
+
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/lainxi"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:clickable="true"
+                        android:foreground="?android:selectableItemBackground"
+                        app:cardBackgroundColor="#fff"
+                        app:cardCornerRadius="10dp"
+                        app:cardMaxElevation="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="86dp"
+                                android:background="@color/card_image_color"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:textColor="#333"
+                                    android:textSize="20sp"
+                                    android:text="联系开发者和获取帮助" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="10dp"
+                                android:paddingTop="10dp"
+                                android:paddingBottom="5dp"
+                                android:text="如果你又任何疑惑可以联系开发者获取帮助"
+                                android:textColor="#333"
+                                android:textSize="10dp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="10dp"
+                                android:paddingTop="5dp"
+                                android:paddingRight="20dp"
+                                android:paddingBottom="10dp"
+                                android:text=""
+                                android:textColor="#666"
+                                android:textSize="9sp" />
+                        </LinearLayout>
+                    </android.support.v7.widget.CardView>
+
+
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/use_way"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:clickable="true"
+                        android:foreground="?android:selectableItemBackground"
+                        app:cardBackgroundColor="#fff"
+                        app:cardCornerRadius="10dp"
+                        app:cardMaxElevation="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="86dp"
+                                android:background="@color/card_image_color"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:textColor="#333"
+                                    android:textSize="20sp"
+                                    android:text="使用方法" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="10dp"
+                                android:paddingTop="10dp"
+                                android:paddingBottom="5dp"
+                                android:text="除了程序界面呈现的功能，二维码可以通过桌面添加小部件使用，相信你会爱上这个功能"
+                                android:textColor="#333"
+                                android:textSize="10dp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="10dp"
+                                android:paddingTop="5dp"
+                                android:paddingRight="20dp"
+                                android:paddingBottom="10dp"
+                                android:text=""
+                                android:textColor="#666"
+                                android:textSize="9sp" />
+                        </LinearLayout>
+                    </android.support.v7.widget.CardView>
+
+
+                </LinearLayout>
+
+
+            </ScrollView>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/line_pay_qr_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+</FrameLayout>

@@ -1,0 +1,105 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/widget"
+    android:background="@drawable/widget_yuanjiao"
+    android:foreground="?android:selectableItemBackground"
+    android:orientation="vertical"
+    android:padding="@dimen/widget_margin">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingTop="5dp"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="余额:"/>
+        <TextView
+            android:id="@+id/widget_balance"
+            android:paddingLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""/>
+    </LinearLayout>
+   <FrameLayout
+       android:layout_width="match_parent"
+       android:orientation="vertical"
+       android:layout_weight="1"
+       android:layout_marginTop="-15dp"
+       android:layout_height="wrap_content">
+       <ImageView
+           android:clickable="false"
+           android:id="@+id/widget_image"
+           android:layout_width="match_parent"
+           android:src="@drawable/icon"
+           android:layout_gravity="center"
+           android:layout_height="match_parent"
+           />
+
+       <LinearLayout
+           android:id="@+id/widget_net_error"
+           android:visibility="invisible"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:gravity="center"
+           android:background="@color/white">
+           <ImageView
+               android:layout_width="40dp"
+               android:layout_height="40dp"
+               android:layout_gravity="center"
+               android:src="@android:drawable/presence_busy"
+               />
+           <TextView
+               android:id="@+id/widget_error_des"
+               android:layout_width="wrap_content"
+               android:layout_height="40dp"
+               android:layout_gravity="center"
+               android:gravity="center"
+               android:textSize="23sp"
+               android:text="网路异常"/>
+       </LinearLayout>
+
+       <LinearLayout
+           android:id="@+id/widget_licence"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:visibility="invisible"
+           android:background="@color/white"
+           >
+           <TextView
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_gravity="center"
+               android:gravity="center"
+               android:textColor="#FF4040"
+               android:text="试用过期"
+               android:textSize="18sp" />
+       </LinearLayout>
+   </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:layout_marginTop="-20dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:textColor="#bbb"
+            android:clickable="false"
+            android:text="更新"
+            android:foreground="?android:selectableItemBackground"
+            android:id="@+id/widget_update"/>
+
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
