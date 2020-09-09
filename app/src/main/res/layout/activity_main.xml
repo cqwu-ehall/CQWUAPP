@@ -57,7 +57,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginRight="30dp"
-                                android:text="软件介绍:\n本软件开源,不会收集任何用户隐私"
+                                android:text="软件介绍:\n本软件开源,不会收集任何用户隐私, \n 开源地址：\n https://github.com/99733287/CQWUAPP"
                                 android:textColor="#eee"
                                 android:textSize="15sp"
                                 />
