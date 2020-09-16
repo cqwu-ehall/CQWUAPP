@@ -16,23 +16,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support.constraint:constraint-layout:2.0.0-beta2'
     implementation 'com.codemybrainsout.onboarding:onboarder:1.0.4'
     implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
-    testImplementation 'junit:junit:4.13-beta-3'
     implementation 'com.squareup.okhttp3:okhttp:4.1.1'
-    implementation "me.shaohui:bottomdialog:1.1.9"
-    implementation 'android.arch.work:work-runtime:1.0.1'
     implementation 'cn.yipianfengye.android:zxing-library:2.2'
-    implementation 'com.kaopiz:kprogresshud:1.2.0'
+    implementation 'com.race604.flyrefresh:library:2.0.0'
 
-
-
-    implementation group: 'com.eminayar.panterdialog', name: 'panter-dialog', version: '0.0.2.1'
 
 
 

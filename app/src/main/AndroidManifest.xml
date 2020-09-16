@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.ucpeo.meal">
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".TAppllication"
         android:allowBackup="true"
@@ -13,10 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".JuanzhuActivity"></activity>
-
-        <activity android:name=".RechargeActivity" />
-
+        <activity android:name=".WebViewActivity"></activity>
         <activity android:name=".LoginActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -27,6 +29,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Welcome" />
+
         <receiver android:name=".widget.Widget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -38,10 +41,5 @@
                 android:resource="@xml/widget_info" />
         </receiver>
     </application>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
-
-    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

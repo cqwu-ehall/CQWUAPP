@@ -3,8 +3,6 @@ package com.ucpeo.meal.utils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 
-import com.franmontiel.persistentcookiejar.ClearableCookieJar;
-import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 import com.ucpeo.meal.okhttp.PostData;
@@ -18,7 +16,6 @@ import java.io.InputStream;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -28,7 +25,6 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import okhttp3.Cookie;
 import okhttp3.FormBody;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -121,33 +117,18 @@ public class NetUtil {
         return requestbuilder;
     }
 
-    public static InputStream getInputStream(OkHttpClient client, Request request) {
-        InputStream stream = null;
-        try {
-            stream = client.newCall(request).execute().body().byteStream();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return stream;
-    }
-
-    public static Request.Builder httpPostJsonData(Request.Builder builder, Object json) {
-        //RequestBody requestBody = FormBody.create(MediaType.parse("application/json; charset=utf-8"));
-        return builder;
-    }
 
     public static Request.Builder httpPostToGet(Request.Builder builder, String url, PostData datas) {
         builder.url(url + datas.toGet());
         //builder.post(null);
         return builder;
     }
-
+    /**
+     * PostData post数据数组
+     * 添加进request post 数据中
+     *
+     * */
     public static Request.Builder httpPostData(Request.Builder builder, PostData datas) {
-        /*
-         * PostData post数据数组
-         * 添加进request post 数据中
-         *
-         * */
         FormBody.Builder formbodybuilder = new FormBody.Builder();
         for (PostData.Data data1 : datas.getDatas()) {
             formbodybuilder.add(data1.name, data1.value);

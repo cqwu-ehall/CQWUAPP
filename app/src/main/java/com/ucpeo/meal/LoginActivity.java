@@ -1,10 +1,16 @@
 package com.ucpeo.meal;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,20 +22,25 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 
+import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 import com.ucpeo.meal.okhttp.PostData;
 import com.ucpeo.meal.utils.CqwuUtil;
 import com.ucpeo.meal.utils.NetUtil;
-import com.ucpeo.meal.utils.Tool;
-
-import me.shaohui.bottomdialog.BottomDialog;
 
 
+import java.util.List;
+
+
+
+
+import okhttp3.Cookie;
 import okhttp3.OkHttpClient;
 
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends Activity implements View.OnClickListener {
     private static String TAG = "LoginActivity 登录界面";
     public static int LOGIN_ERROR = 40996;
+    public static int LOGIN_BROWSER = 30002;
 
     OkHttpClient okHttpClient;
     EditText usernameEdit;
@@ -78,11 +89,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.usage_protocol:
-                BottomDialog.create(getSupportFragmentManager())
-                        .setLayoutRes(R.layout.usage_protocol_layout)
-                        .setHeight(Tool.dip2px(this, 300))
-                        .setDimAmount(0.5f)
-                        .show();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -92,6 +98,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.login_button:
                 login();
+                break;
+            case  R.id.usage_browser_login:
+                Intent intent = new Intent(this, WebViewActivity.class);
+                intent.setData(Uri.parse("http://authserver.cqwu.edu.cn/authserver/login"));
+                startActivity(intent);
+                finish();
+                break;
 
         }
     }
@@ -116,11 +129,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void init() {
-        usernameEdit = findViewById(R.id.username_login);
-        passwordEdit = findViewById(R.id.password_login);
-        codeEdit = findViewById(R.id.code_login);
-        code_group = findViewById(R.id.code_group);
-        codeImageView = findViewById(R.id.code_view);
+        usernameEdit = (EditText) findViewById(R.id.username_login);
+        passwordEdit = (EditText) findViewById(R.id.password_login);
+        codeEdit = (EditText) findViewById(R.id.code_login);
+        code_group = (LinearLayout) findViewById(R.id.code_group);
+        codeImageView = (ImageView) findViewById(R.id.code_view);
         okHttpClient = new NetUtil(this).getOkHttpClient();
 
         handler = new Handler(getApplicationContext().getMainLooper()) {
@@ -159,6 +172,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void setEventListeners() {
         findViewById(R.id.usage_protocol).setOnClickListener(this);
         findViewById(R.id.login_button).setOnClickListener(this);
+        findViewById(R.id.usage_browser_login).setOnClickListener(this);
         usernameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -177,6 +191,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void loginResult(Message msg) {
         if (msg.arg1 == CqwuUtil.CODE_SUCCESS) {
             Log.v(TAG, "登录成功");
+            List<Cookie> cookies = new SharedPrefsCookiePersistor(this).loadAll();
+            for (Cookie cookie : cookies) {
+                Log.d(TAG,  cookie.domain()+": "+cookie.toString());
+            }
             setResult(CqwuUtil.CODE_SUCCESS);
             finish();
         } else {

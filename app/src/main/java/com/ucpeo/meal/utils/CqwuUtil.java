@@ -1,12 +1,23 @@
 package com.ucpeo.meal.utils;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.webkit.CookieManager;
+import android.webkit.ValueCallback;
 
+import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
+import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
+import com.ucpeo.meal.MainActivity;
 import com.ucpeo.meal.TAppllication;
+import com.ucpeo.meal.WebViewActivity;
 import com.ucpeo.meal.okhttp.PostData;
 
 import org.jetbrains.annotations.NotNull;
@@ -211,6 +222,11 @@ public class CqwuUtil {
         handler.sendMessage(msg);
     }
 
+
+    /**
+     * 保存持久Cookie
+     *
+     * */
     public void writeCookies() {
         CookieJar cookieJar = (CookieJar) okHttpClient.cookieJar();
         List<Cookie> list = new ArrayList<>();
@@ -222,52 +238,48 @@ public class CqwuUtil {
 
     }
 
-    public void syncTo5keo(String username, String password) {
-        Log.v(TAG, "登录成功 开始同步");
-        successTask("同步及登录成功", CODE_LOGIN);
-        writeCookies();
-//        String url = "http://ssm.5keo.com/ssm/sync/";
-//        PostData postData = new PostData();
-//        postData.append("username", username);
-//        postData.append("password", password);
-//        String md5 = MD5.md5Decode(username + password);
-//        postData.append("md5", md5);
-//
-//        Request.Builder builder = new Request.Builder().url(url);
-//
-//        Callback callback = new Callback() {
-//            @Override
-//            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-//                faildTask(CODE_LOGIN);
-//            }
-//
-//            @Override
-//            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-//                String resp = response.body().string();
-//                Log.v(TAG,"同步返回结果:"+resp);
-//                response.close();
-//                Boolean state = false;
-//                try {
-//                    JSONObject json = new JSONObject(resp);
-//                    state = json.getBoolean("state");
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                } finally {
-//                    if (state) {
-//                        successTask("同步及登录成功", CODE_LOGIN);
-//                        writeCookies();
-//
-//                    } else {
-//                        faildTask(CODE_LOGIN);
-//                    }
-//                }
-//            }
-//
-//        };
-//        NetUtil.httpPostData(builder, postData);
-//        okHttpClient.newCall(builder.build()).enqueue(callback);
-
+    /**
+     * 同步cookie到webview
+     * @param context 上下文对象 ==> SharedPrefsCookiePersistor 持久cookie
+     *
+     * */
+    public  static  void syncCookie2WebClient(Context context){
+        final CookieManager cookieManager = CookieManager.getInstance();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            cookieManager.removeAllCookies(result->{
+                syncCookie(cookieManager,context);
+            });
+        }else {
+            cookieManager.removeAllCookie();
+            syncCookie(cookieManager,context);
+        }
     }
+
+    public static  void  clearCookie(CookieManager cookieManager ){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            cookieManager.removeAllCookies(result->{
+            });
+        }else {
+            cookieManager.removeAllCookie();
+        }
+    }
+
+    private static void syncCookie(CookieManager cookieManager, Context context){
+        cookieManager.setAcceptCookie(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            cookieManager.removeAllCookies(aBoolean -> {
+                CookieJar  cookieJar =  new CookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(context));
+                List<Cookie> cookies = cookieJar.getPersistor().loadAll();
+                for (Cookie cookie : cookies) {
+                    cookieManager.setCookie(cookie.domain(),cookie.toString());
+                };
+                cookieManager.flush();
+            });
+        }
+    }
+
+
+
 
     public static void request(final OkHttpClient okHttpClient , final Request request , final Callback callback, Integer times){
         if (times==null)

@@ -2,6 +2,8 @@ package com.ucpeo.meal;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -11,12 +13,20 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+
+
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+
+import android.widget.ListView;
+
 import android.widget.Toast;
 
+import com.race604.flyrefresh.FlyRefreshLayout;
 import com.ucpeo.meal.utils.CqwuUtil;
 import com.ucpeo.meal.widget.Widget;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
@@ -24,10 +34,13 @@ import com.uuzuche.lib_zxing.activity.CodeUtils;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends Activity  {
     private static final String TAG = "MainActivity";
     final int GET_SERVER = 300;
     final private int REQUEST_CODE = 5;
+    int times = 0;
+    long lastTime = 0;
+    ListView listView;
     Handler handler;
 
     private static String[] PERMISSIONS_STORAGE = {
@@ -51,11 +64,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(new Intent(this, Welcome.class));
         }
 
-        findViewById(R.id.tool_login).setOnClickListener(this);
-        findViewById(R.id.tool_recharge).setOnClickListener(this);
-        findViewById(R.id.juanzhu).setOnClickListener(this);
-        findViewById(R.id.lainxi).setOnClickListener(this);
-        findViewById(R.id.refresh).setOnClickListener(this);
+        FlyRefreshLayout flyRefreshLayout = findViewById(R.id.fly_layout);
+
+        listView = findViewById(R.id.list);
+
+        listView.setAdapter(new ArrayAdapter<String>(this, R.layout.textview, new String[]{"余额充值", "卡中心", "重新登录", "刷新小部件"}));
+
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            String type = (String) listView.getAdapter().getItem(position);
+            Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+            intent.setData(Uri.parse("http://218.194.176.214:8382/epay/thirdapp/index"));
+            Log.d(TAG, "onCreate: " + type);
+            switch (type){
+                case "余额充值":
+                    startActivity(intent);
+                    break;
+                case "卡中心":
+                    startActivity(intent);
+                    break;
+                case "重新登录":
+
+                     startActivity(new Intent(this,LoginActivity.class));
+                    break;
+                case "刷新小部件":
+                    Widget.create(this);
+                    break;
+            }
+        });
 
         handler = new Handler(getMainLooper()) {
             @Override
@@ -76,31 +111,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.tool_login:
-                startActivityForResult(new Intent(this, LoginActivity.class), CqwuUtil.CODE_LOGIN);
-                break;
-            case R.id.tool_recharge:
-                startActivity(new Intent(this, RechargeActivity.class));
-                break;
-            case R.id.juanzhu:
-                startActivity(new Intent(this, JuanzhuActivity.class));
-                break;
-            case R.id.lainxi:
-                lianxi();
-                break;
-            case R.id.refresh:
-                refresh();
-                break;
-        }
-    }
 
-    private void refresh() {
-        Widget.create(this);
 
-    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -133,37 +146,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
     @Override
     protected void onResume() {
         super.onResume();
     }
 
-
-    public static boolean isQQClientAvailable(Context context) {
-        final PackageManager packageManager = context.getPackageManager();
-        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
-        if (pinfo != null) {
-            for (int i = 0; i < pinfo.size(); i++) {
-                String pn = pinfo.get(i).packageName;
-                if (pn.equals("com.tencent.mobileqq")) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
-    public void lianxi() {
-        if (isQQClientAvailable(MainActivity.this)) {
-            final String qqUrl = "mqqwpa://im/chat?chat_type=wpa&uin=2013142594&version=1";
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(qqUrl)));
-        } else {
-            Toast.makeText(MainActivity.this, "请安装QQ客户端", Toast.LENGTH_SHORT).show();
-        }
-
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
