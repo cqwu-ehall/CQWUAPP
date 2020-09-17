@@ -27,26 +27,28 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.race604.flyrefresh.FlyRefreshLayout;
+import com.ucpeo.meal.utils.AutoLogin;
 import com.ucpeo.meal.utils.CqwuUtil;
 import com.ucpeo.meal.utils.QRcode;
 import com.ucpeo.meal.widget.Widget;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class MainActivity extends Activity implements  QRcode.QRlistener {
+public class MainActivity extends Activity implements QRcode.QRlistener {
     private static final String TAG = "MainActivity";
     final int GET_SERVER = 300;
     final private int REQUEST_CODE = 5;
-    QRcode qRcode ;
+    QRcode qRcode;
     int times = 0;
     long lastTime = 0;
     ListView listView;
-    TextView balanceView ;
-    TextView baltimeView ;
+    TextView balanceView;
+    TextView baltimeView;
     Handler handler;
     FlyRefreshLayout flyRefreshLayout;
 
@@ -55,7 +57,6 @@ public class MainActivity extends Activity implements  QRcode.QRlistener {
     };
     //请求状态码
     private static int REQUEST_PERMISSION_CODE = 1;
-
 
 
     @Override
@@ -73,8 +74,8 @@ public class MainActivity extends Activity implements  QRcode.QRlistener {
             startActivity(new Intent(this, Welcome.class));
         }
 
-         flyRefreshLayout = findViewById(R.id.fly_layout);
-            flyRefreshLayout.setActionDrawable(getResources().getDrawable(R.drawable.icon));
+        flyRefreshLayout = findViewById(R.id.fly_layout);
+        flyRefreshLayout.setActionDrawable(getResources().getDrawable(R.drawable.icon));
         flyRefreshLayout.setOnPullRefreshListener(new FlyRefreshLayout.OnPullRefreshListener() {
             @Override
             public void onRefresh(FlyRefreshLayout view) {
@@ -83,25 +84,24 @@ public class MainActivity extends Activity implements  QRcode.QRlistener {
 
             @Override
             public void onRefreshAnimationEnd(FlyRefreshLayout view) {
-              Toast.makeText(getParent(),"刷新完成",Toast.LENGTH_LONG).show();
+                Toast.makeText(getParent(), "刷新完成", Toast.LENGTH_LONG).show();
             }
         });
 
 
-
         qRcode.setListener(this);
         listView = findViewById(R.id.list);
-        balanceView=findViewById(R.id.balance);
-        baltimeView=findViewById(R.id.time);
+        balanceView = findViewById(R.id.balance);
+        baltimeView = findViewById(R.id.time);
 
-        listView.setAdapter(new ArrayAdapter<String>(this, R.layout.textview, new String[]{"余额充值", "卡中心", "重新登录", "刷新小部件"}));
+        listView.setAdapter(new ArrayAdapter<String>(this, R.layout.textview, new String[]{"余额充值", "卡中心", "重新登录", "刷新小部件", "测试"}));
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
             String type = (String) listView.getAdapter().getItem(position);
             Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
             intent.setData(Uri.parse("http://218.194.176.214:8382/epay/thirdapp/index"));
             Log.d(TAG, "onCreate: " + type);
-            switch (type){
+            switch (type) {
                 case "余额充值":
                     startActivity(intent);
                     break;
@@ -109,11 +109,24 @@ public class MainActivity extends Activity implements  QRcode.QRlistener {
                     startActivity(intent);
                     break;
                 case "重新登录":
-
-                     startActivity(new Intent(this,LoginActivity.class));
+                    startActivity(new Intent(this, LoginActivity.class));
                     break;
                 case "刷新小部件":
                     Widget.create(this);
+                    break;
+
+                default:
+                    new AutoLogin(this, new AutoLogin.LoginBack() {
+                        @Override
+                        public void success() {
+                            Log.d(TAG, "success: ");
+                        }
+
+                        @Override
+                        public void fail() {
+                            Log.d(TAG, "fail: ");
+                        }
+                    }).autoLogin();
                     break;
             }
         });
@@ -135,10 +148,6 @@ public class MainActivity extends Activity implements  QRcode.QRlistener {
         handler.sendMessage(msg);
 
     }
-
-
-
-
 
 
     @Override
@@ -191,7 +200,6 @@ public class MainActivity extends Activity implements  QRcode.QRlistener {
     }
 
 
-
     @Override
     public void needLoginError() {
         Log.d(TAG, "needLoginError: ");
@@ -209,8 +217,8 @@ public class MainActivity extends Activity implements  QRcode.QRlistener {
 
     @Override
     public void successBalance(String balance) {
-        Log.d(TAG, "successBalance: "+balance);
-        baltimeView.post(()->{
+        Log.d(TAG, "successBalance: " + balance);
+        baltimeView.post(() -> {
             balanceView.setText(balance);
             Date date = new Date();
             @SuppressLint("SimpleDateFormat") DateFormat format = new SimpleDateFormat("HH:mm:ss");

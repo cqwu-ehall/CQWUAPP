@@ -1,18 +1,14 @@
 package com.ucpeo.meal;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 ;
 import android.util.Log;
@@ -109,8 +105,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             return;
 
         TAppllication appllication = (TAppllication) getApplication();
-        appllication.save("username", username);
-        appllication.save("password", password);
+    //    appllication.save("username", username);
+        //appllication.save("password", password);
         String code = codeEdit.getText().toString();
         if (code.length() != 0)
             login_Form.append("captchaResponse", code);
@@ -164,15 +160,12 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     public void setEventListeners() {
         findViewById(R.id.login_button).setOnClickListener(this);
         findViewById(R.id.usage_browser_login).setOnClickListener(this);
-        usernameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                Log.v(TAG, "用户名输入框焦点状态改变" + hasFocus);
-                if (!hasFocus) {
-                    String username = usernameEdit.getText().toString();
-                    if (username.length() != 0) {
-                        cqwuUtil.needCode(username);
-                    }
+        usernameEdit.setOnFocusChangeListener((v, hasFocus) -> {
+            Log.v(TAG, "用户名输入框焦点状态改变" + hasFocus);
+            if (!hasFocus) {
+                String username = usernameEdit.getText().toString();
+                if (username.length() != 0) {
+                    cqwuUtil.needCode(username);
                 }
             }
         });
@@ -186,6 +179,15 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             for (Cookie cookie : cookies) {
                 Log.d(TAG,  cookie.domain()+": "+cookie.toString());
             }
+            username = usernameEdit.getText().toString();
+            password = passwordEdit.getText().toString();
+            Log.v(TAG, username);
+            if (username == null)
+                return;
+
+            TAppllication appllication = (TAppllication) getApplication();
+            appllication.save("username", username);
+            appllication.save("password", password);
             setResult(CqwuUtil.CODE_SUCCESS);
             finish();
         } else {

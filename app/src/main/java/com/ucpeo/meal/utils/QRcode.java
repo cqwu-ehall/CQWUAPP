@@ -1,7 +1,10 @@
 package com.ucpeo.meal.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 
@@ -10,6 +13,7 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.ucpeo.meal.TAppllication;
 
 
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +36,7 @@ import okhttp3.Response;
 
 public class QRcode {
     OkHttpClient okHttpClient;
+    Context context ;
 
 
     public void writeCookies() {
@@ -124,19 +129,20 @@ public class QRcode {
     }
 
     public QRcode(Context context) {
+        this.context = context;
         okHttpClient = new NetUtil(context).getOkHttpClient();
 
     }
 
 
     public interface QRlistener {
-        void needLoginError();
+       default void needLoginError(){};
 
-        void netWorkError(String des);
+        default  void netWorkError(String des){};
 
-        void success(String code);
+        default  void success(String code){};
 
-        void successBalance(String balance);
+        default  void successBalance(String balance){};
     }
 
     QRlistener listener = new QRlistener() {
@@ -198,6 +204,9 @@ public class QRcode {
         });
 
     }
+
+
+
 
 
 }

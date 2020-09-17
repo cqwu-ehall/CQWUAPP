@@ -46,7 +46,6 @@ import okhttp3.Response;
 
 public class CqwuUtil {
 
-
     public final static int CODE_FAIL = -1;
     public final static int CODE_SUCCESS = 1;
     public final static int CODE_GET_LOGIN_INPUT = 100;
@@ -307,6 +306,7 @@ public class CqwuUtil {
         });
 
     }
+
 
 
 }

@@ -1,5 +1,7 @@
 package com.ucpeo.meal.utils;
 
+import android.content.Context;
+
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.CookieCache;
 import com.franmontiel.persistentcookiejar.persistence.CookiePersistor;
@@ -23,4 +25,6 @@ public class CookieJar extends PersistentCookieJar {
     public CookiePersistor getPersistor() {
         return persistor;
     }
+
+
 }

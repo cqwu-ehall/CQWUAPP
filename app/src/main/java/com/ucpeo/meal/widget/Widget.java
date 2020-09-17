@@ -16,6 +16,8 @@ import android.widget.RemoteViews;
 
 import com.ucpeo.meal.LoginActivity;
 import com.ucpeo.meal.R;
+import com.ucpeo.meal.TAppllication;
+import com.ucpeo.meal.utils.AutoLogin;
 import com.ucpeo.meal.utils.MakeQRCodeUtil;
 import com.ucpeo.meal.utils.QRcode;
 
@@ -81,6 +83,14 @@ public class Widget extends AppWidgetProvider {
     }
 
     public static void create(final Context context) {
+        TAppllication appllication = (TAppllication) context.getApplicationContext();
+        String lst =appllication.get("lastTime");
+        if (!"".equals(lst)){
+            if (System.currentTimeMillis()-Long.parseLong(lst)<1000){
+                return;
+            }
+        }
+        appllication.save("lastTime",String.valueOf(System.currentTimeMillis()));
         try {
 
 
@@ -91,7 +101,17 @@ public class Widget extends AppWidgetProvider {
                 @Override
                 public void needLoginError() {
                     Log.v(TAG, "需要登录");
-                    needLogin(context);
+                   new AutoLogin(context, new AutoLogin.LoginBack() {
+                       @Override
+                       public void success() {
+                         create(context);
+                       }
+
+                       @Override
+                       public void fail() {
+                           needLogin(context);
+                       }
+                   }).autoLogin();
 
                 }
 
