@@ -88,14 +88,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.usage_protocol:
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        handler.sendMessage(Message.obtain());
-                    }
-                }).start();
-                break;
             case R.id.login_button:
                 login();
                 break;
@@ -170,7 +162,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     }
 
     public void setEventListeners() {
-        findViewById(R.id.usage_protocol).setOnClickListener(this);
         findViewById(R.id.login_button).setOnClickListener(this);
         findViewById(R.id.usage_browser_login).setOnClickListener(this);
         usernameEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {

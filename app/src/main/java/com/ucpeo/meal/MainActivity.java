@@ -8,40 +8,47 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-
-
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import android.widget.ListView;
 
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.race604.flyrefresh.FlyRefreshLayout;
 import com.ucpeo.meal.utils.CqwuUtil;
+import com.ucpeo.meal.utils.QRcode;
 import com.ucpeo.meal.widget.Widget;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
 
-import java.util.List;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
-public class MainActivity extends Activity  {
+public class MainActivity extends Activity implements  QRcode.QRlistener {
     private static final String TAG = "MainActivity";
     final int GET_SERVER = 300;
     final private int REQUEST_CODE = 5;
+    QRcode qRcode ;
     int times = 0;
     long lastTime = 0;
     ListView listView;
+    TextView balanceView ;
+    TextView baltimeView ;
     Handler handler;
+    FlyRefreshLayout flyRefreshLayout;
 
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.RECEIVE_BOOT_COMPLETED,
@@ -50,9 +57,11 @@ public class MainActivity extends Activity  {
     private static int REQUEST_PERMISSION_CODE = 1;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        qRcode = new QRcode(this);
         setContentView(R.layout.activity_main);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_PERMISSION_CODE);
@@ -64,9 +73,26 @@ public class MainActivity extends Activity  {
             startActivity(new Intent(this, Welcome.class));
         }
 
-        FlyRefreshLayout flyRefreshLayout = findViewById(R.id.fly_layout);
+         flyRefreshLayout = findViewById(R.id.fly_layout);
+            flyRefreshLayout.setActionDrawable(getResources().getDrawable(R.drawable.icon));
+        flyRefreshLayout.setOnPullRefreshListener(new FlyRefreshLayout.OnPullRefreshListener() {
+            @Override
+            public void onRefresh(FlyRefreshLayout view) {
+                qRcode.getBalance();
+            }
 
+            @Override
+            public void onRefreshAnimationEnd(FlyRefreshLayout view) {
+              Toast.makeText(getParent(),"刷新完成",Toast.LENGTH_LONG).show();
+            }
+        });
+
+
+
+        qRcode.setListener(this);
         listView = findViewById(R.id.list);
+        balanceView=findViewById(R.id.balance);
+        baltimeView=findViewById(R.id.time);
 
         listView.setAdapter(new ArrayAdapter<String>(this, R.layout.textview, new String[]{"余额充值", "卡中心", "重新登录", "刷新小部件"}));
 
@@ -164,4 +190,32 @@ public class MainActivity extends Activity  {
 
     }
 
+
+
+    @Override
+    public void needLoginError() {
+        Log.d(TAG, "needLoginError: ");
+    }
+
+    @Override
+    public void netWorkError(String des) {
+        Log.d(TAG, "netWorkError: ");
+    }
+
+    @Override
+    public void success(String code) {
+        Log.d(TAG, "success: ");
+    }
+
+    @Override
+    public void successBalance(String balance) {
+        Log.d(TAG, "successBalance: "+balance);
+        baltimeView.post(()->{
+            balanceView.setText(balance);
+            Date date = new Date();
+            @SuppressLint("SimpleDateFormat") DateFormat format = new SimpleDateFormat("HH:mm:ss");
+            baltimeView.setText(format.format(date));
+
+        });
+    }
 }

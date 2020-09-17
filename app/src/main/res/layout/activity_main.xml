@@ -2,12 +2,11 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white"
     android:orientation="vertical">
 
 
-      <com.race604.flyrefresh.FlyRefreshLayout
+      <com.ucpeo.meal.FlyRefreshLayoutEx
           android:id="@+id/fly_layout"
           android:layout_width="match_parent"
           android:layout_height="match_parent">
@@ -35,11 +34,12 @@
                       android:text="余额:">
                   </TextView>
                   <TextView
+                      android:id="@+id/balance"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:textSize="20sp"
                       android:textColor="@color/white"
-                      android:text="20.00">
+                      android:text="00.00">
                   </TextView>
                   <TextView
                       android:layout_marginLeft="10dp"
@@ -55,7 +55,8 @@
                       android:layout_height="wrap_content"
                       android:textColor="@color/white"
                       android:textSize="20sp"
-                      android:text="19:00:56">
+                      android:id="@+id/time"
+                      android:text="00:00:00">
                   </TextView>
               </LinearLayout>
               <ListView
@@ -65,7 +66,7 @@
                   android:layout_height="match_parent">
               </ListView>
           </LinearLayout>
-      </com.race604.flyrefresh.FlyRefreshLayout>
+      </com.ucpeo.meal.FlyRefreshLayoutEx>
     <LinearLayout
         android:id="@+id/line_pay_qr_code"
         android:layout_width="match_parent"
