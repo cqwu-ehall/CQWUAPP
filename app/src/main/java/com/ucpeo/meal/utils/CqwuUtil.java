@@ -1,35 +1,24 @@
 package com.ucpeo.meal.utils;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.webkit.CookieManager;
-import android.webkit.ValueCallback;
+import android.webkit.WebView;
 
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
-import com.ucpeo.meal.MainActivity;
-import com.ucpeo.meal.TAppllication;
-import com.ucpeo.meal.WebViewActivity;
 import com.ucpeo.meal.okhttp.PostData;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.MatchResult;
@@ -45,40 +34,37 @@ import okhttp3.Response;
 
 
 public class CqwuUtil {
-
     public final static int CODE_FAIL = -1;
     public final static int CODE_SUCCESS = 1;
     public final static int CODE_GET_LOGIN_INPUT = 100;
     public final static int CODE_NEED_CODE = 101;
     public final static int CODE_LOGIN = 200;
 
-
     Handler handler;
-    PostData initPostData  = new PostData();
+    PostData initPostData = new PostData();
+    String pwdDefaultEncryptSalt;
 
-    private static String TAG = "CqwuUtil  网络请求";
+    private static final String TAG = "CqwuUtil  网络请求";
     OkHttpClient okHttpClient;
-
 
     public CqwuUtil(OkHttpClient okHttpClient, Handler handler) {
         this.handler = handler;
         this.okHttpClient = okHttpClient;
     }
 
-
     public void login(final PostData postData) {
 
-        PostData  post =new PostData();
-        Map<String,String> map = new HashMap<>();
+        PostData post = new PostData();
+        Map<String, String> map = new HashMap<>();
 
         for (PostData.Data data : initPostData.getDatas()) {
-            map.put(data.name,data.value);
+            map.put(data.name, data.value);
         }
         for (PostData.Data data : postData.getDatas()) {
-            map.put(data.name,data.value);
+            map.put(data.name, data.value);
         }
         for (String s : map.keySet()) {
-            post.append(s,map.get(s));
+            post.append(s, map.get(s));
         }
 
         String url = "http://authserver.cqwu.edu.cn/authserver/login";
@@ -91,33 +77,29 @@ public class CqwuUtil {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String url = response.request().url().toString();
                 String html = response.body().string();
                 response.close();
-                if (html.contains("logout")){
+                if (html.contains("logout")) {
                     writeCookies();
                     successTask("同步及登录成功", CODE_LOGIN);
+                } else {
+                    faildTask(CODE_LOGIN);
                 }
-
             }
         };
 
         Log.v(TAG, "登录表单" + post.toJson().toString());
         Request.Builder builder = new Request.Builder().url(url);
         NetUtil.httpPostData(builder, post);
-        request(okHttpClient,builder.build(),callback,1);
-      //  okHttpClient.newCall(builder.build()).enqueue(callback);
-
+        request(okHttpClient, builder.build(), callback, 1);
     }
 
-
     public void getLoginPage() {
-        String url ="http://authserver.cqwu.edu.cn/authserver/login";
+        String url = "http://authserver.cqwu.edu.cn/authserver/login";
         Callback callback = new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
-
             }
 
             @Override
@@ -125,33 +107,42 @@ public class CqwuUtil {
                 String html = response.body().string();
                 response.close();
                 initPostData = buildLoginPost(html);
+                setPwdDefaultEncryptSalt(html);
                 CookieJar cookieJar = (CookieJar) okHttpClient.cookieJar();
-                Iterator<Cookie> iterator = cookieJar.getCache().iterator();
-                while (iterator.hasNext()){
-                    System.out.println(iterator.next().toString());
+                for (Cookie cookie : cookieJar.getCache()) {
+                    System.out.println(cookie.toString());
                 }
             }
         };
-
         Request.Builder builder = new Request.Builder().url(url);
-        request(okHttpClient,builder.build(),callback,1);
-
-
+        request(okHttpClient, builder.build(), callback, 1);
     }
 
 
     public PostData buildLoginPost(String html) {
-
         String reg = "<input.*? name=\"(.*?)\".*?value=\"(.*?)\".*?>";
         Pattern pattern = Pattern.compile(reg);
-        Matcher matcher =pattern.matcher(html);
+        Matcher matcher = pattern.matcher(html);
         PostData postData = new PostData();
-        while (matcher.find()){
+        while (matcher.find()) {
             MatchResult matchResult = matcher.toMatchResult();
-            postData.append(matchResult.group(1),matchResult.group(2));
+            postData.append(matchResult.group(1), matchResult.group(2));
         }
-        return  postData;
+        return postData;
+    }
 
+    public void setPwdDefaultEncryptSalt(String html) {
+        String reg = "<input type=\"hidden\" id=\"pwdDefaultEncryptSalt\" value=\"(.*?)\".*?>";
+        Pattern pattern = Pattern.compile(reg);
+        Matcher matcher = pattern.matcher(html);
+        while (matcher.find()) {
+            MatchResult matchResult = matcher.toMatchResult();
+            pwdDefaultEncryptSalt = matchResult.group(1);
+        }
+    }
+
+    public String getPwdDefaultEncryptSalt() {
+        return pwdDefaultEncryptSalt;
     }
 
     public void needCode(String username) {
@@ -170,9 +161,9 @@ public class CqwuUtil {
                 boolean needCode = html.contains("true");
                 if (needCode) {
                     getCodeImage();
-                } else
+                } else {
                     successTask(null, CODE_NEED_CODE);
-
+                }
             }
         };
 
@@ -204,13 +195,11 @@ public class CqwuUtil {
 
     }
 
-
     public void faildTask(int taskId) {
         Message msg = Message.obtain(handler);
         msg.what = taskId;
         msg.arg1 = CODE_FAIL;
         handler.sendMessage(msg);
-
     }
 
     public void successTask(Object data, int taskId) {
@@ -224,89 +213,59 @@ public class CqwuUtil {
 
     /**
      * 保存持久Cookie
-     *
-     * */
+     */
     public void writeCookies() {
         CookieJar cookieJar = (CookieJar) okHttpClient.cookieJar();
         List<Cookie> list = new ArrayList<>();
-        Iterator<Cookie> cookies = cookieJar.getCache().iterator();
-        while (cookies.hasNext()) {
-            list.add(cookies.next());
+        for (Cookie cookie : cookieJar.getCache()) {
+            list.add(cookie);
         }
         cookieJar.getPersistor().saveAll(list);
-
     }
 
     /**
      * 同步cookie到webview
-     * @param context 上下文对象 ==> SharedPrefsCookiePersistor 持久cookie
      *
-     * */
-    public  static  void syncCookie2WebClient(Context context){
+     * @param context 上下文对象 ==> SharedPrefsCookiePersistor 持久cookie
+     */
+    public static void syncCookie2WebClient(WebView webview, Context context) {
         final CookieManager cookieManager = CookieManager.getInstance();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            cookieManager.removeAllCookies(result->{
-                syncCookie(cookieManager,context);
-            });
-        }else {
-            cookieManager.removeAllCookie();
-            syncCookie(cookieManager,context);
-        }
+        syncCookie(cookieManager, webview, context);
     }
 
-    public static  void  clearCookie(CookieManager cookieManager ){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            cookieManager.removeAllCookies(result->{
-            });
-        }else {
-            cookieManager.removeAllCookie();
+    private static void syncCookie(CookieManager cookieManager, WebView webview, Context context) {
+        cookieManager.setAcceptThirdPartyCookies(webview, true);
+        CookieJar cookieJar = new CookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(context));
+        List<Cookie> cookies = cookieJar.getPersistor().loadAll();
+        for (Cookie cookie : cookies) {
+            cookieManager.setCookie(cookie.domain(), cookie.toString());
         }
+        cookieManager.flush();
     }
 
-    private static void syncCookie(CookieManager cookieManager, Context context){
-        cookieManager.setAcceptCookie(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            cookieManager.removeAllCookies(aBoolean -> {
-                CookieJar  cookieJar =  new CookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(context));
-                List<Cookie> cookies = cookieJar.getPersistor().loadAll();
-                for (Cookie cookie : cookies) {
-                    cookieManager.setCookie(cookie.domain(),cookie.toString());
-                };
-                cookieManager.flush();
-            });
-        }
-    }
-
-
-
-
-    public static void request(final OkHttpClient okHttpClient , final Request request , final Callback callback, Integer times){
-        if (times==null)
-            times=1;
-        else if (times>10){
+    public static void request(final OkHttpClient okHttpClient, final Request request, final Callback callback, Integer times) {
+        if (times == null)
+            times = 1;
+        else if (times > 10) {
             Log.d(TAG, "request: 重定向次数过多");
-            callback.onFailure(null,new IOException("重定向次数过多"));
+            callback.onFailure(null, new IOException("重定向次数过多"));
         }
-        final Integer finalTimes = times+1;
+        final Integer finalTimes = times + 1;
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-               callback.onFailure(call,e);
+                callback.onFailure(call, e);
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.code()>=300&&response.code()<400){
-                    Log.d(TAG, "onResponse: "+request.url().toString());
-                     request(okHttpClient,new Request.Builder().url(request.url()).build(),callback, finalTimes);
-                }else{
-                    callback.onResponse(call,response);
+                if (response.code() >= 300 && response.code() < 400) {
+                    Log.d(TAG, "onResponse: " + request.url());
+                    request(okHttpClient, new Request.Builder().url(request.url()).build(), callback, finalTimes);
+                } else {
+                    callback.onResponse(call, response);
                 }
             }
         });
-
     }
-
-
-
 }

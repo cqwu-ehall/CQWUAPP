@@ -5,8 +5,9 @@ import android.util.AttributeSet;
 
 import com.race604.flyrefresh.FlyRefreshLayout;
 
-public class FlyRefreshLayoutEx extends FlyRefreshLayout  {
-    Context context ;
+public class FlyRefreshLayoutEx extends FlyRefreshLayout {
+    Context context;
+
     public FlyRefreshLayoutEx(Context context) {
         super(context);
         this.context = context;

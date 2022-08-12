@@ -1,32 +1,30 @@
 package com.ucpeo.meal;
 
 import android.app.Activity;
-import android.content.DialogInterface;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
-import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
-;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 import com.ucpeo.meal.okhttp.PostData;
 import com.ucpeo.meal.utils.CqwuUtil;
-import com.ucpeo.meal.utils.NetUtil;
-
 
 import java.util.List;
-
-
+import java.util.Objects;
 
 
 import okhttp3.Cookie;
@@ -34,10 +32,7 @@ import okhttp3.OkHttpClient;
 
 
 public class LoginActivity extends Activity implements View.OnClickListener {
-    private static String TAG = "LoginActivity 登录界面";
-    public static int LOGIN_ERROR = 40996;
-    public static int LOGIN_BROWSER = 30002;
-
+    private static final String TAG = "LoginActivity 登录界面";
     OkHttpClient okHttpClient;
     EditText usernameEdit;
     EditText passwordEdit;
@@ -49,10 +44,11 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     Handler handler;
     String username;
     String password;
+    WebView webView;
+    static final int login_icon_id = R.id.login_button;
+    static final int use_web_view_id = R.id.usage_browser_login;
 
     public void needCode(Message msg) {
-        Log.v(TAG, "主线程=" + isMainThread());
-        Log.v(TAG, "获取是否需要验证码");
         if (msg.arg1 == CqwuUtil.CODE_FAIL) {
             Log.v(TAG, "获取验证码状态失败");
             return;
@@ -62,74 +58,90 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             code_group.setVisibility(View.VISIBLE);
             codeImageView.setImageBitmap((Bitmap) msg.obj);
             cqwuUtil.getLoginPage();
-
-
         } else {
             Log.v(TAG, "不需要验证码");
             code_group.setVisibility(View.INVISIBLE);
             codeEdit.getText().clear();
-
         }
-
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TAppllication tAppllication = (TAppllication) this.getApplicationContext();
+        tAppllication.fullScreen(this);
+        okHttpClient = tAppllication.okHttpClient;
+        username = tAppllication.get("username");
+        password = tAppllication.get("password");
+
         setContentView(R.layout.activity_login);
+
         init();
         setEventListeners();
+        initWebview();
+
+        if (!Objects.equals(username, "")) {
+            usernameEdit.setText(username);
+            cqwuUtil.needCode(username);
+        }
+        if (!Objects.equals(password, "")) {
+            passwordEdit.setText(password);
+        }
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.login_button:
+            case login_icon_id:
                 login();
                 break;
-            case  R.id.usage_browser_login:
+            case use_web_view_id:
                 Intent intent = new Intent(this, WebViewActivity.class);
                 intent.setData(Uri.parse("http://authserver.cqwu.edu.cn/authserver/login"));
                 startActivity(intent);
                 finish();
                 break;
-
         }
     }
 
     private void login() {
         username = usernameEdit.getText().toString();
         password = passwordEdit.getText().toString();
-        Log.v(TAG, username);
-        if (username == null)
-            return;
+        Log.d(TAG, "username:" + username + "password:" + password);
+        if (username == null) return;
+        if (password == null) return;
 
-        TAppllication appllication = (TAppllication) getApplication();
-    //    appllication.save("username", username);
-        //appllication.save("password", password);
+        String script = "encryptAES(\"" + password + "\", \"" + cqwuUtil.getPwdDefaultEncryptSalt() + "\");";
+        webView.evaluateJavascript(script, s -> {
+            login_Form.append("password", s.replace("\"", ""));
+            cqwuUtil.login(login_Form);
+        });
+
         String code = codeEdit.getText().toString();
-        if (code.length() != 0)
+        if (code.length() != 0) {
             login_Form.append("captchaResponse", code);
-        Log.v(TAG, "username:" + username + "password:" + password);
+        } else if (code_group.getVisibility() == View.VISIBLE) {
+            Toast.makeText(this, "请输入验证码", Toast.LENGTH_SHORT).show();
+            return;
+        }
         login_Form.append("username", username);
-        login_Form.append("password", password);
-        cqwuUtil.login(login_Form);
     }
 
     public void init() {
-        usernameEdit = (EditText) findViewById(R.id.username_login);
-        passwordEdit = (EditText) findViewById(R.id.password_login);
-        codeEdit = (EditText) findViewById(R.id.code_login);
-        code_group = (LinearLayout) findViewById(R.id.code_group);
-        codeImageView = (ImageView) findViewById(R.id.code_view);
-        okHttpClient = new NetUtil(this).getOkHttpClient();
+        usernameEdit = findViewById(R.id.username_login);
+        passwordEdit = findViewById(R.id.password_login);
+        codeEdit = findViewById(R.id.code_login);
+        code_group = findViewById(R.id.code_group);
+        codeImageView = findViewById(R.id.code_view);
 
         handler = new Handler(getApplicationContext().getMainLooper()) {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case CqwuUtil.CODE_GET_LOGIN_INPUT:
-                        if (msg.arg1 == CqwuUtil.CODE_FAIL) Log.v(TAG, "登录任务失败");
-                        else login_Form = (PostData) msg.obj;
+                        if (msg.arg1 == CqwuUtil.CODE_FAIL) {
+                            loginResult(msg);
+                            return;
+                        } else login_Form = (PostData) msg.obj;
                         break;
                     case CqwuUtil.CODE_NEED_CODE:
                         needCode(msg);
@@ -137,31 +149,18 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     case CqwuUtil.CODE_LOGIN:
                         loginResult(msg);
                         break;
-                    case 40996:
-                        new AlertDialog.Builder(LoginActivity.this).setTitle("登录失败")//设置对话框标题
-                                .setMessage("应用网关错误或登录信息错误")//设置显示的内容
-                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {//添加确定按钮
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {//确定按钮的响应事件
-                                    }
-                                }).show();//显示此对话框
-                        break;
                 }
-                Log.v(TAG, "线程状况 主线程：" + isMainThread());
-                Log.v(TAG, "线程状况 主线程ID：" + Looper.getMainLooper().getThread().getId() + "  当前线程ID:" + Thread.currentThread().getId());
             }
         };
 
         cqwuUtil = new CqwuUtil(okHttpClient, handler);
         cqwuUtil.getLoginPage();
-
     }
 
     public void setEventListeners() {
-        findViewById(R.id.login_button).setOnClickListener(this);
-        findViewById(R.id.usage_browser_login).setOnClickListener(this);
+        findViewById(login_icon_id).setOnClickListener(this);
+        findViewById(use_web_view_id).setOnClickListener(this);
         usernameEdit.setOnFocusChangeListener((v, hasFocus) -> {
-            Log.v(TAG, "用户名输入框焦点状态改变" + hasFocus);
             if (!hasFocus) {
                 String username = usernameEdit.getText().toString();
                 if (username.length() != 0) {
@@ -169,7 +168,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 }
             }
         });
-
     }
 
     public void loginResult(Message msg) {
@@ -177,13 +175,12 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             Log.v(TAG, "登录成功");
             List<Cookie> cookies = new SharedPrefsCookiePersistor(this).loadAll();
             for (Cookie cookie : cookies) {
-                Log.d(TAG,  cookie.domain()+": "+cookie.toString());
+                Log.d(TAG, cookie.domain() + ": " + cookie);
             }
             username = usernameEdit.getText().toString();
             password = passwordEdit.getText().toString();
             Log.v(TAG, username);
-            if (username == null)
-                return;
+            if (username == null) return;
 
             TAppllication appllication = (TAppllication) getApplication();
             appllication.save("username", username);
@@ -191,21 +188,27 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             setResult(CqwuUtil.CODE_SUCCESS);
             finish();
         } else {
-            Message msg1 =Message.obtain();
-            msg1.what=40996;
-            handler.sendMessage(msg1);
+            new AlertDialog.Builder(LoginActivity.this).setTitle("登录失败")//设置对话框标题
+                    .setMessage("应用网关错误或登录信息错误")//设置显示的内容
+                    .setPositiveButton("确定", (dialog, which) -> {//确定按钮的响应事件
+                    }).show();//显示此对话框
             Log.v(TAG, "登录失败");
             cqwuUtil.getLoginPage();
             String username = usernameEdit.getText().toString();
             if (username.length() != 0) {
                 cqwuUtil.needCode(username);
             }
+            if (!passwordEdit.getText().toString().equals("")) {
+                passwordEdit.setText("");
+            }
         }
     }
 
-    public boolean isMainThread() {
-        return Looper.getMainLooper() == Looper.myLooper();
+    public void initWebview() {
+        webView = findViewById(R.id.web_view);
+        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebViewClient(new WebViewClient());
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.loadUrl("file:///android_asset/encrypt.html");
     }
-
-
 }

@@ -1,76 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical">
 
+    <com.ucpeo.meal.FlyRefreshLayoutEx
+        android:id="@+id/fly_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-      <com.ucpeo.meal.FlyRefreshLayoutEx
-          android:id="@+id/fly_layout"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="#1A000000"
+                android:gravity="bottom|center"
+                android:orientation="horizontal"
+                android:padding="10dp">
 
-              >
-              <LinearLayout
-                  android:layout_width="match_parent"
-                  android:layout_height="60dp"
-                  android:padding="10dp"
-                  android:gravity="bottom|center"
-                  android:orientation="horizontal"
-                  android:background="#1A000000"
-                  >
-                  <TextView
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:textSize="15sp"
-                      android:paddingRight="10dp"
-                      android:textColor="#c1c1c1"
-                      android:text="余额:">
-                  </TextView>
-                  <TextView
-                      android:id="@+id/balance"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:textSize="20sp"
-                      android:textColor="@color/white"
-                      android:text="00.00">
-                  </TextView>
-                  <TextView
-                      android:layout_marginLeft="10dp"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:textSize="15sp"
-                      android:textColor="#c1c1c1"
-                      android:paddingRight="10dp"
-                      android:text="刷新时间:">
-                  </TextView>
-                  <TextView
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:textColor="@color/white"
-                      android:textSize="20sp"
-                      android:id="@+id/time"
-                      android:text="00:00:00">
-                  </TextView>
-              </LinearLayout>
-              <ListView
-                  android:id="@+id/list"
-                  android:background="@color/white"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent">
-              </ListView>
-          </LinearLayout>
-      </com.ucpeo.meal.FlyRefreshLayoutEx>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="10dp"
+                    android:text="余额:"
+                    android:textColor="#c1c1c1"
+                    android:textSize="15sp"
+                    tools:ignore="RtlSymmetry" />
+
+                <TextView
+                    android:id="@+id/balance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00.00"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:text="刷新时间:"
+                    android:textColor="#c1c1c1"
+                    android:textSize="15sp"
+                    tools:ignore="RtlSymmetry" />
+
+                <TextView
+                    android:id="@+id/time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00:00"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white" />
+        </LinearLayout>
+    </com.ucpeo.meal.FlyRefreshLayoutEx>
+
     <LinearLayout
         android:id="@+id/line_pay_qr_code"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" />
-
 </FrameLayout>

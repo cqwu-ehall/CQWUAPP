@@ -14,23 +14,23 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import com.ucpeo.meal.LoginActivity;
 import com.ucpeo.meal.R;
 import com.ucpeo.meal.TAppllication;
-import com.ucpeo.meal.utils.AutoLogin;
 import com.ucpeo.meal.utils.MakeQRCodeUtil;
 import com.ucpeo.meal.utils.QRcode;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 
 /**
  * Implementation of App Widget functionality.
  */
 public class Widget extends AppWidgetProvider {
-
     private static final String MONTH_TOP_CLICK = "com.ucpeo.meal.action.APPWIDGET_UPDATE";
-    public static final String SCAN_CLICK = "com.ucpeo.meal.action.APPWIDGET_SCAN";
     private static final String TAG = "桌面小部件";
-
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
@@ -38,13 +38,11 @@ public class Widget extends AppWidgetProvider {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
         views.setTextViewText(R.id.widget_update, "更新");
         Intent topIntent = new Intent(context, Widget.class).setAction(MONTH_TOP_CLICK);
-        PendingIntent topPendingIntent = PendingIntent.getBroadcast(context, appWidgetId, topIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent topPendingIntent = PendingIntent.getBroadcast(context, appWidgetId, topIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.widget, topPendingIntent);
         views.setOnClickPendingIntent(R.id.widget_update, topPendingIntent);
         appWidgetManager.updateAppWidget(appWidgetId, views);
-
     }
-
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -83,36 +81,22 @@ public class Widget extends AppWidgetProvider {
     }
 
     public static void create(final Context context) {
-        TAppllication appllication = (TAppllication) context.getApplicationContext();
-        String lst =appllication.get("lastTime");
-        if (!"".equals(lst)){
-            if (System.currentTimeMillis()-Long.parseLong(lst)<1000){
+        TAppllication application = (TAppllication) context.getApplicationContext();
+        String lst = application.get("lastTime");
+        if (!"".equals(lst)) {
+            if (System.currentTimeMillis() - Long.parseLong(lst) < 1000) {
                 return;
             }
         }
-        appllication.save("lastTime",String.valueOf(System.currentTimeMillis()));
+        application.save("lastTime", String.valueOf(System.currentTimeMillis()));
         try {
-
-
-            final QRcode qRcode = new QRcode(context);
+            final QRcode qRcode = new QRcode(context, application.get_http_client());
             qRcode.getCodeOnHttp();
             final long now = System.currentTimeMillis();
             qRcode.setListener(new QRcode.QRlistener() {
                 @Override
                 public void needLoginError() {
                     Log.v(TAG, "需要登录");
-                   new AutoLogin(context, new AutoLogin.LoginBack() {
-                       @Override
-                       public void success() {
-                         create(context);
-                       }
-
-                       @Override
-                       public void fail() {
-                           needLogin(context);
-                       }
-                   }).autoLogin();
-
                 }
 
                 @Override
@@ -145,7 +129,6 @@ public class Widget extends AppWidgetProvider {
         } catch (Exception e) {
             Log.v(TAG, "error");
         }
-
     }
 
 
@@ -156,7 +139,7 @@ public class Widget extends AppWidgetProvider {
         remoteViews.setViewVisibility(R.id.widget_licence, View.INVISIBLE);
         Intent layout = new Intent(context, Widget.class);
         layout.setAction(MONTH_TOP_CLICK);
-        remoteViews.setOnClickPendingIntent(R.id.widget, PendingIntent.getBroadcast(context, 0, layout, 0));
+        remoteViews.setOnClickPendingIntent(R.id.widget, PendingIntent.getBroadcast(context, 0, layout, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT));
         Vibrator vibrator = (Vibrator) context.getSystemService(context.VIBRATOR_SERVICE);
         long[] patter = {20, 30, 10};
         vibrator.vibrate(patter, -1);
@@ -167,9 +150,10 @@ public class Widget extends AppWidgetProvider {
     public static void apply(Context context, String balance) {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget);
         remoteViews.setTextViewText(R.id.widget_balance, balance);
-
+        Date date = new Date();
+        DateFormat format = new SimpleDateFormat("HH:mm:ss", Locale.CHINA);
+        remoteViews.setTextViewText(R.id.widget_time, format.format(date));
         remoteViews.setViewVisibility(R.id.widget_net_error, View.INVISIBLE);
-
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         appWidgetManager.updateAppWidget(new ComponentName(context, Widget.class), remoteViews);
     }
@@ -181,27 +165,4 @@ public class Widget extends AppWidgetProvider {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         appWidgetManager.updateAppWidget(new ComponentName(context, Widget.class), remoteViews);
     }
-
-    public static boolean licence(Context context, Boolean state) {
-        int visible = View.INVISIBLE;
-
-        if (!state)
-            visible = View.VISIBLE;
-
-        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget);
-        remoteViews.setViewVisibility(R.id.widget_licence, visible);
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        appWidgetManager.updateAppWidget(new ComponentName(context, Widget.class), remoteViews);
-        return !state;
-
-    }
-
-    public static void needLogin(Context context) {
-        Intent intent = new Intent(context, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
-    }
-
-
 }
-

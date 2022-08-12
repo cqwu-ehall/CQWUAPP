@@ -51,11 +51,10 @@
                 android:layout_height="40dp"
                 android:hint="网上办事大厅账号/学号/别名"
                 android:inputType="text"
-                android:paddingStart="5dp"
+                android:paddingLeft="5dp"
                 android:textColor="@color/white"
                 android:textColorHint="#bbb"
-                android:theme="@style/MyEditText"
-                tools:ignore="RtlSymmetry" />
+                android:theme="@style/MyEditText" />
 
         </LinearLayout>
 
@@ -79,11 +78,10 @@
                 android:layout_height="40dp"
                 android:hint="登录密码"
                 android:inputType="textPassword"
-                android:paddingStart="5dp"
+                android:paddingLeft="5dp"
                 android:textColor="@color/white"
                 android:textColorHint="#bbb"
-                android:theme="@style/MyEditText"
-                tools:ignore="RtlSymmetry" />
+                android:theme="@style/MyEditText" />
 
         </LinearLayout>
 

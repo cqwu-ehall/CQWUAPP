@@ -17,23 +17,26 @@
         android:roundIcon="@mipmap/icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".WebViewActivity"></activity>
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:targetApi="n">
+        <activity android:name=".WebViewActivity" />
         <activity android:name=".LoginActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name="com.ucpeo.meal.action.APPWIDGET_SCAN" />
+                <action android:name="com.xtaolabs.meal.action.APPWIDGET_SCAN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".Welcome" />
 
-        <receiver android:name=".widget.Widget">
+        <receiver android:name=".widget.Widget"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.ucpeo.meal.action.APPWIDGET_UPDATE" />
+                <action android:name="com.xtaolabs.meal.action.APPWIDGET_UPDATE" />
             </intent-filter>
 
             <meta-data
