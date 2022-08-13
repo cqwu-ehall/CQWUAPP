@@ -15,7 +15,7 @@ public class Welcome extends AhoyOnboarderActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TAppllication application = (TAppllication) getApplication();
-        application.fullScreen(this);
+        application.fullScreen(this, false);
         AhoyOnboarderCard ahoyOnboarderCard1 = new AhoyOnboarderCard("付款码", "将付款码搬家到桌面,支付我快人一步", R.drawable.barcode);
         AhoyOnboarderCard ahoyOnboarderCard2 = new AhoyOnboarderCard("开门", "二维码推送到桌面,开门还需要打开某日校园?看点广告，慢慢载入页面？在这里不存在的", R.drawable.door);
         AhoyOnboarderCard ahoyOnboarderCard3 = new AhoyOnboarderCard("充值", "集成快速充值通道,剔除其他支付方式，采用最优秀安全的支付宝。", R.drawable.wallet);
@@ -48,9 +48,7 @@ public class Welcome extends AhoyOnboarderActivity {
 
         setColorBackground(colorList);
 
-
         setOnboardPages(pages);
-
     }
 
     @Override

@@ -48,7 +48,7 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TAppllication application = (TAppllication) getApplication();
-        application.fullScreen(this);
+        application.fullScreen(this, false);
         setContentView(R.layout.activity_web_view);
 
         LinearLayout btn_group = findViewById(R.id.btn_group);

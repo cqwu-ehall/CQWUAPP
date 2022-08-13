@@ -157,7 +157,7 @@
     android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/usage_browser_login"
+        android:id="@+id/privacy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -166,7 +166,7 @@
         android:foreground="?android:selectableItemBackground"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:text="浏览器登录"
+        android:text="《用户协议和隐私政策》"
         android:textColor="#999"
         android:textSize="15sp"
         android:focusable="true" />

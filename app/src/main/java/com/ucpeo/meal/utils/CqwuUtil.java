@@ -106,6 +106,10 @@ public class CqwuUtil {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String html = response.body().string();
                 response.close();
+                if (html.contains("logout")) {
+                    successTask("同步及登录成功", CODE_LOGIN);
+                    return;
+                }
                 initPostData = buildLoginPost(html);
                 setPwdDefaultEncryptSalt(html);
                 CookieJar cookieJar = (CookieJar) okHttpClient.cookieJar();
@@ -117,7 +121,6 @@ public class CqwuUtil {
         Request.Builder builder = new Request.Builder().url(url);
         request(okHttpClient, builder.build(), callback, 1);
     }
-
 
     public PostData buildLoginPost(String html) {
         String reg = "<input.*? name=\"(.*?)\".*?value=\"(.*?)\".*?>";

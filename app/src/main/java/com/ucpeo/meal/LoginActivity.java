@@ -1,10 +1,10 @@
 package com.ucpeo.meal;
 
+import static com.ucpeo.meal.utils.ShowPrivacy.showPrivacyDialog;
+
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
@@ -46,7 +46,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     String password;
     WebView webView;
     static final int login_icon_id = R.id.login_button;
-    static final int use_web_view_id = R.id.usage_browser_login;
+    static final int privacy_view_id = R.id.privacy;
 
     public void needCode(Message msg) {
         if (msg.arg1 == CqwuUtil.CODE_FAIL) {
@@ -69,7 +69,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TAppllication tAppllication = (TAppllication) this.getApplicationContext();
-        tAppllication.fullScreen(this);
+        tAppllication.fullScreen(this, true);
+        if (tAppllication.NeedShowPrivacyDialog()) {
+            showPrivacyDialog(this, tAppllication);
+        }
         okHttpClient = tAppllication.okHttpClient;
         username = tAppllication.get("username");
         password = tAppllication.get("password");
@@ -91,15 +94,16 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        if (((TAppllication) this.getApplicationContext()).NeedShowPrivacyDialog()) {
+            showPrivacyDialog(this, (TAppllication) this.getApplicationContext());
+            return;
+        }
         switch (v.getId()) {
             case login_icon_id:
                 login();
                 break;
-            case use_web_view_id:
-                Intent intent = new Intent(this, WebViewActivity.class);
-                intent.setData(Uri.parse("http://authserver.cqwu.edu.cn/authserver/login"));
-                startActivity(intent);
-                finish();
+            case privacy_view_id:
+                showPrivacyDialog(this, (TAppllication) this.getApplicationContext());
                 break;
         }
     }
@@ -159,7 +163,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
     public void setEventListeners() {
         findViewById(login_icon_id).setOnClickListener(this);
-        findViewById(use_web_view_id).setOnClickListener(this);
+        findViewById(privacy_view_id).setOnClickListener(this);
         usernameEdit.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
                 String username = usernameEdit.getText().toString();

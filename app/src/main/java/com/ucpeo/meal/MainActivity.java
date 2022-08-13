@@ -2,6 +2,7 @@ package com.ucpeo.meal;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,17 +13,16 @@ import android.os.Message;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
-import android.widget.ListView;
-
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.utils.widget.ImageFilterView;
 import androidx.core.app.ActivityCompat;
 
-import com.race604.flyrefresh.FlyRefreshLayout;
 import com.ucpeo.meal.utils.CqwuUtil;
 import com.ucpeo.meal.utils.QRcode;
 import com.ucpeo.meal.widget.Widget;
@@ -30,23 +30,21 @@ import com.uuzuche.lib_zxing.activity.CodeUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-
-import okhttp3.OkHttpClient;
 
 
 public class MainActivity extends Activity implements QRcode.QRlistener {
     private static final String TAG = "MainActivity";
     final int GET_SERVER = 300;
     QRcode qRcode;
-    ListView listView;
     TextView balanceView;
     TextView baltimeView;
     Handler handler;
-    FlyRefreshLayout flyRefreshLayout;
-    OkHttpClient okHttpClient;
 
     private static final String[] PERMISSIONS_STORAGE = {
             Manifest.permission.RECEIVE_BOOT_COMPLETED,
@@ -58,9 +56,8 @@ public class MainActivity extends Activity implements QRcode.QRlistener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TAppllication application = (TAppllication) getApplication();
-        application.fullScreen(this);
-        okHttpClient = application.okHttpClient;
-        qRcode = new QRcode(this, okHttpClient);
+        application.fullScreen(this, false);
+        qRcode = new QRcode(this, application.okHttpClient);
         setContentView(R.layout.activity_main);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_PERMISSION_CODE);
@@ -70,59 +67,10 @@ public class MainActivity extends Activity implements QRcode.QRlistener {
             startActivity(new Intent(this, Welcome.class));
         }
 
-        flyRefreshLayout = findViewById(R.id.fly_layout);
-        flyRefreshLayout.setActionDrawable(getResources().getDrawable(R.drawable.icon));
-        flyRefreshLayout.setOnPullRefreshListener(new FlyRefreshLayout.OnPullRefreshListener() {
-            @Override
-            public void onRefresh(FlyRefreshLayout view) {
-                qRcode.getBalance();
-            }
-
-            @Override
-            public void onRefreshAnimationEnd(FlyRefreshLayout view) {
-                Toast.makeText(getParent(), "刷新完成", Toast.LENGTH_LONG).show();
-            }
-        });
         qRcode.getBalance();
-
         qRcode.setListener(this);
-        listView = findViewById(R.id.list);
-        balanceView = findViewById(R.id.balance);
-        baltimeView = findViewById(R.id.time);
 
-        listView.setAdapter(new ArrayAdapter<>(
-                this,
-                R.layout.textview, new String[]{"余额充值", "支付码", "账单", "卡中心", "重新登录", "刷新小部件"}));
-
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            String type = (String) listView.getAdapter().getItem(position);
-            Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
-            Log.d(TAG, "onCreate: " + type);
-            switch (type) {
-                case "余额充值":
-                    intent.setData(Uri.parse("http://pay.cqwu.edu.cn/signAuthentication?url=openSchoolCardRecharge-payProjectId=2-id=3"));
-                    startActivity(intent);
-                    break;
-                case "支付码":
-                    intent.setData(Uri.parse("http://218.194.176.214:8382/epay/thirdconsume/qrcode"));
-                    startActivity(intent);
-                    break;
-                case "账单":
-                    intent.setData(Uri.parse("http://218.194.176.214:8382/epay/thirdapp/bill"));
-                    startActivity(intent);
-                    break;
-                case "卡中心":
-                    intent.setData(Uri.parse("http://218.194.176.214:8382/epay/thirdapp/index"));
-                    startActivity(intent);
-                    break;
-                case "重新登录":
-                    startActivity(new Intent(this, LoginActivity.class));
-                    break;
-                case "刷新小部件":
-                    Widget.create(this);
-                    break;
-            }
-        });
+        initClickButton();
 
         handler = new Handler(getMainLooper()) {
             @Override
@@ -135,6 +83,78 @@ public class MainActivity extends Activity implements QRcode.QRlistener {
         msg.what = GET_SERVER;
         msg.obj = true;
         handler.sendMessage(msg);
+    }
+
+    protected void initClickButton() {
+        List<TextView> listView = new ArrayList<>();
+
+        balanceView = findViewById(R.id.balance);
+        baltimeView = findViewById(R.id.time);
+
+        listView.add(findViewById(R.id.quick_pay_button));
+        listView.add(findViewById(R.id.quick_charge_button));
+        listView.add(findViewById(R.id.quick_login_button));
+        listView.add(findViewById(R.id.quick_bill_button));
+        listView.add(findViewById(R.id.quick_center_button));
+        listView.add(findViewById(R.id.quick_refresh));
+        listView.add(findViewById(R.id.qq_website));
+        listView.add(findViewById(R.id.qq_channel));
+
+        @SuppressLint("NonConstantResourceId") View.OnClickListener listener = v -> {
+            Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+            Intent intent_ = new Intent(Intent.ACTION_VIEW);
+            switch (v.getId()) {
+                case R.id.title_github_icon:
+                    intent_.setData(Uri.parse("https://github.com/cqwu-ehall/CQWUAPP"));
+                    startActivity(intent_);
+                    break;
+                case R.id.quick_pay_button:
+                    intent.setData(Uri.parse("http://218.194.176.214:8382/epay/thirdconsume/qrcode"));
+                    startActivity(intent);
+                    break;
+                case R.id.quick_charge_button:
+                    intent.setData(Uri.parse("http://pay.cqwu.edu.cn/signAuthentication?url=openSchoolCardRecharge-payProjectId=2-id=3"));
+                    startActivity(intent);
+                    break;
+                case R.id.quick_login_button:
+                    startActivity(new Intent(this, LoginActivity.class));
+                    break;
+                case R.id.quick_bill_button:
+                    intent.setData(Uri.parse("http://218.194.176.214:8382/epay/thirdapp/bill"));
+                    startActivity(intent);
+                    break;
+                case R.id.quick_center_button:
+                    intent.setData(Uri.parse("http://218.194.176.214:8382/epay/thirdapp/index"));
+                    startActivity(intent);
+                    break;
+                case R.id.quick_refresh:
+                    Widget.create(this);
+                    break;
+                case R.id.refresh_click:
+                    qRcode.getBalance();
+                    break;
+                case R.id.qq_website:
+                    intent.setData(Uri.parse("https://app.cqwu.wiki"));
+                    startActivity(intent);
+                    break;
+                case R.id.qq_channel:
+                    intent_.setData(Uri.parse("https://github.com/cqwu-ehall/CQWUAPP"));
+                    startActivity(intent_);
+                    break;
+            }
+        };
+
+        for (int i = 0; i < listView.size(); i++) {
+            listView.get(i).setClickable(true);
+            listView.get(i).setOnClickListener(listener);
+        }
+        LinearLayout main_big_click = findViewById(R.id.refresh_click);
+        main_big_click.setClickable(true);
+        main_big_click.setOnClickListener(listener);
+
+        ImageFilterView github_click = findViewById(R.id.title_github_icon);
+        github_click.setClickable(true);
+        github_click.setOnClickListener(listener);
     }
 
     @Override
@@ -182,8 +202,34 @@ public class MainActivity extends Activity implements QRcode.QRlistener {
         }
     }
 
+    protected void changeLoginStatus(Boolean status) {
+        runOnUiThread(() -> {
+            if (status) {
+                String username = ((TAppllication) this.getApplicationContext()).get("username");
+                Calendar c = Calendar.getInstance();
+                int s = c.get(Calendar.HOUR_OF_DAY);
+                if (s <= 4 || s >= 19) {
+                    username += "，晚上好";
+                } else if (s >= 12) {
+                    username += "，下午好";
+                } else {
+                    username += "，早上好";
+                }
+                ((TextView) findViewById(R.id.main_text_status)).setText(username);
+                findViewById(R.id.main_lin_status).setBackgroundResource(R.drawable.bg_green_round);
+                ImageFilterView img_status = findViewById(R.id.main_img_status);
+                img_status.setImageResource(R.mipmap.ic_success);
+            } else {
+                findViewById(R.id.main_lin_status).setBackgroundResource(R.drawable.bg_dark_round);
+                ImageFilterView img_status = findViewById(R.id.main_img_status);
+                img_status.setImageResource(R.mipmap.ic_warn);
+            }
+        });
+    }
+
     @Override
     public void needLoginError() {
+        changeLoginStatus(false);
         Looper.prepare();
         Toast.makeText(getApplicationContext(), "登录失效，请尝试重新登录", Toast.LENGTH_LONG).show();
         Looper.loop();
@@ -202,6 +248,7 @@ public class MainActivity extends Activity implements QRcode.QRlistener {
     @Override
     public void successBalance(String balance) {
         if (Objects.equals(balance, "null")) {
+            changeLoginStatus(false);
             Toast.makeText(getApplicationContext(), "登录失效，请尝试重新登录", Toast.LENGTH_LONG).show();
             balance = "0.00";
         }
@@ -212,6 +259,7 @@ public class MainActivity extends Activity implements QRcode.QRlistener {
             Date date = new Date();
             DateFormat format = new SimpleDateFormat("HH:mm:ss", Locale.CHINA);
             baltimeView.setText(format.format(date));
+            changeLoginStatus(true);
         });
     }
 }

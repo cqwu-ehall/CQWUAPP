@@ -5,14 +5,16 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.graphics.Color;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 
 import com.ucpeo.meal.utils.NetUtil;
 import com.ucpeo.meal.utils.ShareSaved;
 import com.uuzuche.lib_zxing.activity.ZXingLibrary;
+
+import java.util.Objects;
 
 import okhttp3.OkHttpClient;
 
@@ -75,12 +77,33 @@ public class TAppllication extends Application {
         save("version", String.valueOf(getLocalVersion(this)));
     }
 
-    public void fullScreen(Activity activity) {
-        Window window = activity.getWindow();
-        View decorView = window.getDecorView();
-        int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-        decorView.setSystemUiVisibility(option);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(Color.TRANSPARENT);
+    public boolean NeedShowPrivacyDialog() {
+        try {
+            String privacy = get("privacy_v1");
+            return !Objects.equals(privacy, "true");
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    public void AcceptPrivacy() {
+        save("privacy_v1", "true");
+    }
+
+    public void CancelPrivacy() {
+        save("privacy_v1", "false");
+    }
+
+    public void fullScreen(Activity activity, Boolean light) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+            if (!light) {
+                activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            } else {
+                activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            }
+        }
     }
 }
