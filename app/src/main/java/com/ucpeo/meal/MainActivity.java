@@ -4,6 +4,7 @@ package com.ucpeo.meal;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.utils.widget.ImageFilterView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.ucpeo.meal.utils.CqwuUtil;
 import com.ucpeo.meal.utils.QRcode;
@@ -48,6 +50,7 @@ public class MainActivity extends Activity implements QRcode.QRlistener {
 
     private static final String[] PERMISSIONS_STORAGE = {
             Manifest.permission.RECEIVE_BOOT_COMPLETED,
+            Manifest.permission.INTERNET
     };
     //请求状态码
     private static final int REQUEST_PERMISSION_CODE = 1;
@@ -61,6 +64,16 @@ public class MainActivity extends Activity implements QRcode.QRlistener {
         setContentView(R.layout.activity_main);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_PERMISSION_CODE);
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_PERMISSION_CODE);
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
+            new AlertDialog.Builder(this).setTitle("需要网络")//设置对话框标题
+                    .setMessage("请授予我联网权限，否则我无法正常运行！！！")//设置显示的内容
+                    .setPositiveButton("确定", (dialog, which) -> {//确定按钮的响应事件
+                    }).show();//显示此对话框
+            return;
         }
 
         if (application.checkVersion()) {
@@ -97,14 +110,14 @@ public class MainActivity extends Activity implements QRcode.QRlistener {
         listView.add(findViewById(R.id.quick_bill_button));
         listView.add(findViewById(R.id.quick_center_button));
         listView.add(findViewById(R.id.quick_refresh));
-        listView.add(findViewById(R.id.qq_website));
-        listView.add(findViewById(R.id.qq_channel));
+        listView.add(findViewById(R.id.qq_share));
 
         @SuppressLint("NonConstantResourceId") View.OnClickListener listener = v -> {
             Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
-            Intent intent_ = new Intent(Intent.ACTION_VIEW);
+            Intent intent_ = new Intent();
             switch (v.getId()) {
                 case R.id.title_github_icon:
+                    intent_.setAction(Intent.ACTION_VIEW);
                     intent_.setData(Uri.parse("https://github.com/cqwu-ehall/CQWUAPP"));
                     startActivity(intent_);
                     break;
@@ -133,13 +146,13 @@ public class MainActivity extends Activity implements QRcode.QRlistener {
                 case R.id.refresh_click:
                     qRcode.getBalance();
                     break;
-                case R.id.qq_website:
-                    intent.setData(Uri.parse("https://app.cqwu.wiki"));
-                    startActivity(intent);
-                    break;
-                case R.id.qq_channel:
-                    intent_.setData(Uri.parse("https://github.com/cqwu-ehall/CQWUAPP"));
-                    startActivity(intent_);
+                case R.id.qq_share:
+                    intent_.setAction(Intent.ACTION_SEND);
+                    intent_.putExtra(Intent.EXTRA_TEXT, "「文理校园」，亮出消费码快人一步\uD83D\uDC49：https://app.cqwu.wiki （复制地址到浏览器打开）");
+                    intent_.setType("text/plain");
+
+                    Intent shareIntent = Intent.createChooser(intent_, null);
+                    startActivity(shareIntent);
                     break;
             }
         };

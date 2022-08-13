@@ -191,7 +191,7 @@
                     android:layout_height="wrap_content"
                     android:alpha="0.6"
                     android:lineSpacingExtra="5dp"
-                    android:text="此应用完全免费，如果您是付费下载的此应用，则您已被诈骗。                    推荐您加入我们的 QQ 频道获取更新或者反馈问题。"
+                    android:text="此应用完全免费，如果您是付费下载的此应用，则您已被诈骗。                    "
                     android:textColor="@color/colorTextGray"
                     android:textSize="10sp"
                     tools:ignore="SmallSp" />
@@ -356,7 +356,7 @@
                         android:layout_height="wrap_content"
                         android:alpha="0.85"
                         android:singleLine="true"
-                        android:text="联系方式"
+                        android:text="支持我们"
                         android:textColor="@color/colorTextGray"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -366,20 +366,19 @@
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:id="@+id/qq_website"
+                        android:id="@+id/qq_version"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_button_round"
                         android:gravity="center"
                         android:padding="10dp"
                         android:singleLine="true"
-                        android:text="官网"
+                        android:text="当前版本 v1.0.0"
                         android:textColor="@color/colorTextGray"
                         android:textSize="15sp" />
                     <TextView
-                        android:id="@+id/qq_channel"
+                        android:id="@+id/qq_share"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -387,7 +386,7 @@
                         android:gravity="center"
                         android:padding="10dp"
                         android:singleLine="true"
-                        android:text="QQ 频道"
+                        android:text="分享 App"
                         android:textColor="@color/colorTextGray"
                         android:textSize="15sp" />
                 </LinearLayout>
@@ -455,15 +454,6 @@
                     android:alpha="0.8"
                     android:lineSpacingExtra="10dp"
                     android:text="Q.这个应用安全吗？\nA.安全，账号密码都将保存到本地，不会上传到第三方平台。"
-                    android:textColor="@color/colorTextDark"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:alpha="0.8"
-                    android:lineSpacingExtra="10dp"
-                    android:text="Q.如何反馈问题？\nA.请加入 QQ 频道来与我们取得联系 xxx"
                     android:textColor="@color/colorTextDark"
                     android:textSize="12sp" />
             </LinearLayout>
