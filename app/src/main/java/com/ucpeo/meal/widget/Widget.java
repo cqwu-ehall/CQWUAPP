@@ -151,7 +151,7 @@ public class Widget extends AppWidgetProvider {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget);
         remoteViews.setTextViewText(R.id.widget_balance, balance);
         Date date = new Date();
-        DateFormat format = new SimpleDateFormat("HH:mm:ss", Locale.CHINA);
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
         remoteViews.setTextViewText(R.id.widget_time, format.format(date));
         remoteViews.setViewVisibility(R.id.widget_net_error, View.INVISIBLE);
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);

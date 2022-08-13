@@ -270,7 +270,7 @@ public class MainActivity extends Activity implements QRcode.QRlistener {
         baltimeView.post(() -> {
             balanceView.setText(finalBalance);
             Date date = new Date();
-            DateFormat format = new SimpleDateFormat("HH:mm:ss", Locale.CHINA);
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
             baltimeView.setText(format.format(date));
             changeLoginStatus(true);
         });
