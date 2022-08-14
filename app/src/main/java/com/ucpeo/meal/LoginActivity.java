@@ -1,5 +1,7 @@
 package com.ucpeo.meal;
 
+import static com.ucpeo.meal.utils.ShowPrivacy.showFailedDialog;
+import static com.ucpeo.meal.utils.ShowPrivacy.showNeedCodeDialog;
 import static com.ucpeo.meal.utils.ShowPrivacy.showPrivacyDialog;
 
 import android.app.Activity;
@@ -22,6 +24,8 @@ import android.widget.Toast;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 import com.ucpeo.meal.okhttp.PostData;
 import com.ucpeo.meal.utils.CqwuUtil;
+
+import org.json.JSONException;
 
 import java.util.List;
 import java.util.Objects;
@@ -118,15 +122,25 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         String script = "encryptAES(\"" + password + "\", \"" + cqwuUtil.getPwdDefaultEncryptSalt() + "\");";
         webView.evaluateJavascript(script, s -> {
             login_Form.append("password", s.replace("\"", ""));
-            cqwuUtil.login(login_Form);
+            try {
+                if (login_Form.toJson().get("username") != null) {
+                    cqwuUtil.login(login_Form);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         });
 
         String code = codeEdit.getText().toString();
-        if (code.length() != 0) {
-            login_Form.append("captchaResponse", code);
-        } else if (code_group.getVisibility() == View.VISIBLE) {
-            Toast.makeText(this, "请输入验证码", Toast.LENGTH_SHORT).show();
-            return;
+        if (code_group.getVisibility() == View.VISIBLE) {
+            if (code.length() == 4) {
+                login_Form.append("captchaResponse", code);
+            } else {
+                showNeedCodeDialog(this);
+                return;
+            }
+        } else {
+            login_Form.append("username", username);
         }
         login_Form.append("username", username);
     }
@@ -192,12 +206,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             setResult(CqwuUtil.CODE_SUCCESS);
             finish();
         } else {
-            new AlertDialog.Builder(LoginActivity.this).setTitle("登录失败")//设置对话框标题
-                    .setMessage("应用网关错误或登录信息错误")//设置显示的内容
-                    .setPositiveButton("确定", (dialog, which) -> {//确定按钮的响应事件
-                    }).show();//显示此对话框
+            showFailedDialog(LoginActivity.this);
             Log.v(TAG, "登录失败");
             cqwuUtil.getLoginPage();
+            login_Form.clear();
             String username = usernameEdit.getText().toString();
             if (username.length() != 0) {
                 cqwuUtil.needCode(username);

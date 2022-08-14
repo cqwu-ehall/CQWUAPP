@@ -31,6 +31,26 @@ public final class ShowPrivacy {
                 .show();
     }
 
+    public static void showFailedDialog(Context context) {
+        new XPopup.Builder(context)
+                .isDestroyOnDismiss(true)
+                .asConfirm("登录失败",
+                        "应用网关错误或登录信息错误",
+                        "", "知道了",
+                        () -> {}, () -> {}, true)
+                .show();
+    }
+
+    public static void showNeedCodeDialog(Context context) {
+        new XPopup.Builder(context)
+                .isDestroyOnDismiss(true)
+                .asConfirm("需要验证码",
+                        "请输入正确的验证后再点击登录",
+                        "", "知道了",
+                        () -> {}, () -> {}, true)
+                .show();
+    }
+
     private static SpannableStringBuilder getPrivacy(Context context) {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder()
                 .append("    欢迎使用 文理校园 APP!\n")

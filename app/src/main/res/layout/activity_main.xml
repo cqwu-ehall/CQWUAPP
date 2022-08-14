@@ -374,7 +374,7 @@
                         android:gravity="center"
                         android:padding="10dp"
                         android:singleLine="true"
-                        android:text="当前版本 v1.0.0"
+                        android:text="当前版本 v1.0.2"
                         android:textColor="@color/colorTextGray"
                         android:textSize="15sp" />
                     <TextView

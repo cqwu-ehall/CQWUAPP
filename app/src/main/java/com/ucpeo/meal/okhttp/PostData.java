@@ -35,6 +35,10 @@ public class PostData {
         return json;
     }
 
+    public void clear() {
+        datas.clear();
+    }
+
     public List<Data> getDatas() {
         return datas;
     }

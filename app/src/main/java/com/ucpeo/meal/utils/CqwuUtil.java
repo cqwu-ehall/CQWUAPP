@@ -131,6 +131,7 @@ public class CqwuUtil {
             MatchResult matchResult = matcher.toMatchResult();
             postData.append(matchResult.group(1), matchResult.group(2));
         }
+        postData.append("rememberMe", "on");
         return postData;
     }
 
@@ -227,7 +228,7 @@ public class CqwuUtil {
     }
 
     /**
-     * 同步cookie到webview
+     * 同步cookie到 webview
      *
      * @param context 上下文对象 ==> SharedPrefsCookiePersistor 持久cookie
      */
