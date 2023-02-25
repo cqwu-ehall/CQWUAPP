@@ -49,7 +49,7 @@ public class Widget extends AppWidgetProvider {
         String action = intent.getAction();
         Log.v(TAG, "收到广播:" + action);
         if (MONTH_TOP_CLICK.equals(action)) {
-            Vibrator vibrator = (Vibrator) context.getSystemService(context.VIBRATOR_SERVICE);
+            Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
             long[] patter = {20, 10, 10};
             vibrator.vibrate(patter, -1);
             create(context);
@@ -140,7 +140,7 @@ public class Widget extends AppWidgetProvider {
         Intent layout = new Intent(context, Widget.class);
         layout.setAction(MONTH_TOP_CLICK);
         remoteViews.setOnClickPendingIntent(R.id.widget, PendingIntent.getBroadcast(context, 0, layout, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT));
-        Vibrator vibrator = (Vibrator) context.getSystemService(context.VIBRATOR_SERVICE);
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         long[] patter = {20, 30, 10};
         vibrator.vibrate(patter, -1);
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);

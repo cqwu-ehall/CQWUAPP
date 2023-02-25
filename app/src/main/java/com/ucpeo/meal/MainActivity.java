@@ -126,7 +126,7 @@ public class MainActivity extends Activity implements QRcode.QRlistener {
                     startActivity(intent);
                     break;
                 case R.id.quick_charge_button:
-                    intent.setData(Uri.parse("http://pay.cqwu.edu.cn/signAuthentication?url=openSchoolCardRecharge-payProjectId=2-id=3"));
+                    intent.setData(Uri.parse("https://pay.cqwu.edu.cn/casLogin"));
                     startActivity(intent);
                     break;
                 case R.id.quick_login_button:
